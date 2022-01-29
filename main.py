@@ -9,6 +9,14 @@ import pykorbit
 form_class = uic.loadUiType("mainWindow.ui")[0]
 
 
+class MySignal(QObject):
+    # for make signal
+    signal1 = pyqtSignal()
+
+    def run(self):
+        self.signal1.emit()
+
+
 class MyWindow(QMainWindow, form_class):
     def __init__(self):
         super().__init__()
@@ -19,12 +27,20 @@ class MyWindow(QMainWindow, form_class):
         # title
         self.setWindowTitle("BitCoin")
         # icon
-        self.setWindowIcon(QIcon("bitcoin_icon.png"))
+        self.setWindowIcon(QIcon("Resources/Icon/bitcoin_icon.png"))
         # self.setWindowIcon(QIcon("bitcoin_black.png"))
 
         self.timer = QTimer(self)
         self.timer.start(1000)
         self.timer.timeout.connect(self.inquiry)
+
+        signal = MySignal()
+        signal.signal1.connect(self.signal1_emitted)
+        signal.run()
+
+    @pyqtSlot()
+    def signal1_emitted(self):
+        print("signal1 emitted")
 
     def inquiry(self):
         price = pykorbit.get_current_price("BTC")
