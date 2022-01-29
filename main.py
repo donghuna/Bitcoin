@@ -2,7 +2,8 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5 import uic
-
+from PyQt5.QtCore import *
+import pykorbit
 
 # Load window UI made by Qt Designer
 form_class = uic.loadUiType("mainWindow.ui")[0]
@@ -21,17 +22,20 @@ class MyWindow(QMainWindow, form_class):
         self.setWindowIcon(QIcon("bitcoin_icon.png"))
         # self.setWindowIcon(QIcon("bitcoin_black.png"))
 
-        self.pushButton.clicked.connect(self.btn_clicked)
+        self.timer = QTimer(self)
+        self.timer.start(1000)
+        self.timer.timeout.connect(self.inquiry)
 
-    def btn_clicked(self):
-        print("버튼 클릭")
+    def inquiry(self):
+        price = pykorbit.get_current_price("BTC")
+        self.lineEdit.setText(str(price))
+
+        cur_time = QTime.currentTime()
+        str_time = cur_time.toString("hh:mm:ss")
+        self.statusBar().showMessage(str_time)
 
 
 app = QApplication(sys.argv)
 window = MyWindow()
 window.show()
-
-# label = QLabel("Hello")
-# btn = QPushButton("Hello 1")    # 버튼 객체 생성
-
 app.exec_()

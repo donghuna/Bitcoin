@@ -14,30 +14,27 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QLineEdit" name="lineEdit">
     <property name="geometry">
      <rect>
-      <x>170</x>
-      <y>90</y>
-      <width>75</width>
-      <height>23</height>
+      <x>60</x>
+      <y>20</y>
+      <width>113</width>
+      <height>20</height>
      </rect>
-    </property>
-    <property name="text">
-     <string>클릭</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_2">
+   <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>180</x>
-      <y>140</y>
-      <width>75</width>
-      <height>23</height>
+      <x>20</x>
+      <y>20</y>
+      <width>31</width>
+      <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>PushButton</string>
+     <string>BTC</string>
     </property>
    </widget>
   </widget>
