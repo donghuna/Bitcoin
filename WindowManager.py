@@ -6,7 +6,7 @@ import ThreadManager
 
 
 # Load window UI made by Qt Designer
-form_class = uic.loadUiType("mainWindow.ui")[0]
+form_class = uic.loadUiType("Resources/mainWindow.ui")[0]
 
 
 class MyWindow(QMainWindow, form_class):
