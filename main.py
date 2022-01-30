@@ -10,41 +10,20 @@ form_class = uic.loadUiType("mainWindow.ui")[0]
 
 
 class Worker(QThread):
-    timeout = pyqtSignal(str)
+    BTC_price = pyqtSignal(str)
+    cur_time = pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
-        self.num = 0
-        self.price = pykorbit.get_current_price("BTC")
 
     def run(self):
         while True:
-            self.price = pykorbit.get_current_price("BTC")
-            self.timeout.emit(str(self.price))
-            self.sleep(1000)
+            price = pykorbit.get_current_price("BTC")
+            self.BTC_price.emit(str(price))
 
-
-class MySignal(QObject):
-    # for make signal
-    signal1 = pyqtSignal(float)
-    signal2 = pyqtSignal(str)
-
-    def __init__(self):
-        super().__init__()
-        self.timer = QTimer(self)
-        self.timer.start(1000)
-        self.timer.timeout.connect(self.inquiry)
-        self.price = pykorbit.get_current_price("BTC")
-        self.str_time = "A"
-
-    def inquiry(self):
-        self.price = pykorbit.get_current_price("BTC")
-        cur_time = QTime.currentTime()
-        self.str_time = cur_time.toString("hh:mm:ss")
-
-    def run(self):
-        self.signal1.emit(self.price)
-        self.signal2.emit(self.str_time)
+            currentTime = QTime.currentTime()
+            self.cur_time.emit(currentTime.toString("hh:mm:ss"))
+            self.sleep(1)
 
 
 class MyWindow(QMainWindow, form_class):
@@ -58,17 +37,11 @@ class MyWindow(QMainWindow, form_class):
         self.setWindowTitle("BitCoin")
         # icon
         self.setWindowIcon(QIcon("Resources/Icon/bitcoin_icon.png"))
-        # self.setWindowIcon(QIcon("bitcoin_black.png"))
-
-        # signal = MySignal()
-        # signal.signal1.connect(self.signal1_emitted)
-        # signal.signal2.connect(self.signal2_emitted)
-        # signal.run()
 
         self.worker = Worker()
         self.worker.start()
-        self.worker.timeout.connect(self.signal1_emitted)
-        # worker.run()
+        self.worker.BTC_price.connect(self.signal1_emitted)
+        self.worker.cur_time.connect(self.signal2_emitted)
 
     @pyqtSlot(str)
     def signal1_emitted(self, price):
