@@ -10,10 +10,18 @@ form_class = uic.loadUiType("mainWindow.ui")[0]
 
 
 class Worker(QThread):
+    timeout = pyqtSignal(str)
+
+    def __init__(self):
+        super().__init__()
+        self.num = 0
+        self.price = pykorbit.get_current_price("BTC")
+
     def run(self):
         while True:
-            print("안녕하세요")
-            self.sleep(1)
+            self.price = pykorbit.get_current_price("BTC")
+            self.timeout.emit(str(self.price))
+            self.sleep(1000)
 
 
 class MySignal(QObject):
@@ -52,14 +60,19 @@ class MyWindow(QMainWindow, form_class):
         self.setWindowIcon(QIcon("Resources/Icon/bitcoin_icon.png"))
         # self.setWindowIcon(QIcon("bitcoin_black.png"))
 
-        signal = MySignal()
-        signal.signal1.connect(self.signal1_emitted)
-        signal.signal2.connect(self.signal2_emitted)
-        signal.run()
+        # signal = MySignal()
+        # signal.signal1.connect(self.signal1_emitted)
+        # signal.signal2.connect(self.signal2_emitted)
+        # signal.run()
 
-    @pyqtSlot(float)
+        self.worker = Worker()
+        self.worker.start()
+        self.worker.timeout.connect(self.signal1_emitted)
+        # worker.run()
+
+    @pyqtSlot(str)
     def signal1_emitted(self, price):
-        self.lineEdit.setText(str(price))
+        self.lineEdit.setText(price)
 
     @pyqtSlot(str)
     def signal2_emitted(self, str_time):
