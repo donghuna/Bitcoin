@@ -1,6 +1,7 @@
 from PyQt5.QtCore import *
-import pykorbit
-import Scraping
+import Bithumb
+# import pykorbit
+# import Scraping
 
 
 class Worker(QThread):
@@ -12,9 +13,11 @@ class Worker(QThread):
 
     def run(self):
         while True:
-            BTC = Scraping.Currency("BTC")
-            price = BTC.get_last()
+            # BTC = Scraping.Currency("BTC")
+            # price = BTC.get_last()
             # price = pykorbit.get_current_price("BTC")
+            bithumb = Bithumb.Ticker()
+            price = bithumb.get_current_price("BTC")
 
             self.BTC_price.emit(str(price))
 
