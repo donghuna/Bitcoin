@@ -22,10 +22,12 @@ class Worker(QThread):
             bithumb = Bithumb.Ticker()
             bithumb.get_orderbook("BTC")
             timestamp, price = bithumb.get_current_price("BTC")
+            bithumb.get_ochlv("BTC")
+
 
             self.BTC_price.emit(str(price))
 
-            currentTime = QTime.currentTime()
+            # currentTime = QTime.currentTime()
             # self.cur_time.emit(currentTime.toString("hh:mm:ss"))
 
             self.cur_time.emit(str(datetime.datetime.fromtimestamp(timestamp / 1000)))

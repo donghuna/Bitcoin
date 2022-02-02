@@ -26,8 +26,10 @@ class Ticker:
     def __init__(self):
         self.ticker_url = "https://api.bithumb.com/public/ticker/{}_{}"
         self.orderbook_url = "https://api.bithumb.com/public/orderbook/{}_{}"
+        self.candlestick_url = "https://api.bithumb.com/public/candlestick/{}_{}/{}"
         self.tickers = self._get_ticker_list()
-        self.data = {}
+        self.all_ticker_data = {}
+        self.candlestick_data = {}
 
     def _send_rest_api(self, mode, order_currency, payment_currency):
         if mode == "Ticker":
@@ -41,43 +43,68 @@ class Ticker:
         rtn = []
         self.get_all_ticker_data()
         self.check_status()
-        for key in self.data['data'].keys():
+        for key in self.all_ticker_data['data'].keys():
             rtn.append(key)
         rtn.pop()   # because of last one is 'date'
         return rtn
 
     def get_all_ticker_data(self):
-        self.data = self._send_rest_api("Ticker", "ALL", "KRW")
+        self.all_ticker_data = self._send_rest_api("Ticker", "ALL", "KRW")
 
     def get_all_tickers(self):
         return self.tickers
 
     def check_status(self):
         # TODO : raise error message
-        if self.data['status'] != '0000':
+        if self.all_ticker_data['status'] != '0000':
             return False
         return True
 
     def get_current_price(self, ticker):
         self.get_all_ticker_data()
         self.check_status()
-        return int(self.data['data']['date']), self.data['data'][ticker]['closing_price']
+        return int(self.all_ticker_data['data']['date']), self.all_ticker_data['data'][ticker]['closing_price']
 
     def get_market_detail(self, ticker):
         # TODO : return value which I need
         self.get_all_ticker_data()
         self.check_status()
         rtn = ()
-        self.data['data'][ticker]['min_price']
-        self.data['data'][ticker]['max_price']
-        self.data['data'][ticker]['min_price']
-        self.data['data'][ticker]['min_price']
+        self.all_ticker_data['data'][ticker]['min_price']
+        self.all_ticker_data['data'][ticker]['max_price']
+        self.all_ticker_data['data'][ticker]['min_price']
+        self.all_ticker_data['data'][ticker]['min_price']
         return None
 
     def get_orderbook(self, ticker):
         orderbook_data = self._send_rest_api("Orderbook", "ALL", "KRW")
         print(orderbook_data['data'][ticker]['bids'][0])
         return orderbook_data
+
+    def _renewal_candlestick(self, ticker):
+        # 24h {1m, 3m, 5m, 10m, 30m, 1h, 6h, 12h, 24h 사용 가능}
+        chart_intervals = "24h"
+
+        url = self.candlestick_url.format(ticker, "KRW", chart_intervals)
+        r = requests.get(url)
+        tmp_data = r.json()
+        if tmp_data['status'] == "0000":
+            self.candlestick_data[ticker] = tmp_data
+            return True
+        else:
+            return False
+
+    def get_ochlv(self, ticker):
+        if not self._renewal_candlestick(ticker):
+            return False
+        # str(datetime.datetime.fromtimestamp(timestamp / 1000))
+        print(self.candlestick_data)
+
+
+
+
+
+
 
 
 """
