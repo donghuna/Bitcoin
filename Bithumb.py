@@ -114,13 +114,11 @@ class Ticker:
 
         # 시가, 종가, 고가, 저가, 거래량
         df = DataFrame(self.candlestick_data[ticker]['data'])
-        df.columns = ["Date", "Open", "Closing", "Highest", "Lowest", "Volume"]
-        df.set_index("Date", inplace=True)
-        print(type(df))
-        print(df)
+        df.columns = ["date", "open", "close", "high", "low", "volume"]
+        df.set_index("date", inplace=True)
+        df = df.astype({"open": int, "close": int, "high": int, "low": int, "volume": float})
 
-        # print(self.candlestick_data)
-        return self.candlestick_data
+        return df
 
     @staticmethod
     def _timestamp_to_datetime(timestamp):
