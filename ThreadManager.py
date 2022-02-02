@@ -23,7 +23,7 @@ class Worker(QThread):
             timestamp, price = self.bithumb.get_current_price("BTC")
 
             self.BTC_price.emit(str(price))
-            self.alarm.tmp()
+            self.alarm.bull_market(price)
 
             self.cur_time.emit(str(datetime.datetime.fromtimestamp(timestamp / 1000)))
             time.sleep(self.delay)

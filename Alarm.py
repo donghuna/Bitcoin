@@ -6,15 +6,20 @@ class Alarm:
     def __init__(self):
         self.bithumb = Bithumb.Ticker()
 
-    def tmp(self):
+    def bull_market(self, current_price):
         df = self.bithumb.get_ochlv("BTC")
         close = df['close']
 
-        print(close)
-        print(close.dtypes)
-        print((close[0] + close[1] + close[2] + close[3] + close[4]) / 5)
-        print((close[1] + close[2] + close[3] + close[4] + close[5]) / 5)
-        print((close[2] + close[3] + close[4] + close[5] + close[6]) / 5)
+        ma5 = close.rolling(5).mean()
+        last_ma5 = ma5[-2]
+
+        if current_price > last_ma5:
+            print("up")
+        else:
+            print("down")
+
+
+
 
 
     # https://api.bithumb.com/public/candlestick/{order_currency}_{payment_currency}/{chart_intervals}

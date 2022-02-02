@@ -72,7 +72,7 @@ class Ticker:
     def get_current_price(self, ticker):
         self.get_all_ticker_data()
         self.check_status()
-        return int(self.all_ticker_data['data']['date']), self.all_ticker_data['data'][ticker]['closing_price']
+        return int(self.all_ticker_data['data']['date']), int(self.all_ticker_data['data'][ticker]['closing_price'])
 
     def get_market_detail(self, ticker):
         # TODO : return value which I need
