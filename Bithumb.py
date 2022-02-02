@@ -1,8 +1,17 @@
 import requests
+import datetime
+from pandas import DataFrame
 
 # 요청 당시 빗썸 거래소 가상자산 현재가 정보를 제공합니다.
 # https://api.bithumb.com/public/ticker/{order_currency}_{payment_currency}
-# 빗썸의 공개 API는 초당 20회 호출할 수 있습니다
+"""
+Public API
+1초당 최대 135회 요청 가능합니다.
+초과 요청을 보내면 API 사용이 제한됩니다.
+Private API
+1초당 최대 15회 요청 가능합니다.
+초과 요청을 보내면 API 사용이 일시적으로 제한됩니다. (Public - 1분 / Private info - 5분 / Private trade - 10분)
+"""
 
 """
 필드	설명	타입
@@ -84,6 +93,7 @@ class Ticker:
     def _renewal_candlestick(self, ticker):
         # 24h {1m, 3m, 5m, 10m, 30m, 1h, 6h, 12h, 24h 사용 가능}
         chart_intervals = "24h"
+        # chart_intervals = "1m"
 
         url = self.candlestick_url.format(ticker, "KRW", chart_intervals)
         r = requests.get(url)
@@ -97,31 +107,23 @@ class Ticker:
     def get_ochlv(self, ticker):
         if not self._renewal_candlestick(ticker):
             return False
-        # str(datetime.datetime.fromtimestamp(timestamp / 1000))
-        print(self.candlestick_data)
 
+        # TODO : need this seq?
+        for i in self.candlestick_data[ticker]['data']:
+            i[0] = self._timestamp_to_datetime(i[0])
 
+        # 시가, 종가, 고가, 저가, 거래량
+        df = DataFrame(self.candlestick_data[ticker]['data'])
+        df.columns = ["Date", "Open", "Closing", "Highest", "Lowest", "Volume"]
+        df.set_index("Date", inplace=True)
+        print(type(df))
+        print(df)
 
+        # print(self.candlestick_data)
+        return self.candlestick_data
 
+    @staticmethod
+    def _timestamp_to_datetime(timestamp):
+        _date = datetime.datetime.fromtimestamp(int(timestamp)/1000).strftime('%Y-%m-%d %H:%M:%S')
+        return _date
 
-
-
-
-"""
-# from bs4 import BeautifulSoup
-url = "https://finance.naver.com/item/main.nhn?code=000660"
-html = requests.get(url).text
-
-soup = BeautifulSoup(html, "html5lib")
-tags = soup.select("#_per")
-print(tags)
-tag = tags[0]
-print(tag.text)
-
-# tags = soup.select("table tbody tr td em")
-tags = soup.select("#tab_con1 > div:nth-child(3) > table > tbody > tr.strong > td > em")
-
-print(len(tags))
-for tag in tags:
-    print(tag.text)
-"""
