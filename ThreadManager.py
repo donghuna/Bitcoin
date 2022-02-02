@@ -1,5 +1,7 @@
 from PyQt5.QtCore import *
 import Bithumb
+import time
+import datetime
 # import pykorbit
 # import Scraping
 
@@ -10,6 +12,7 @@ class Worker(QThread):
 
     def __init__(self):
         super().__init__()
+        self.delay = 0.5
 
     def run(self):
         while True:
@@ -17,10 +20,13 @@ class Worker(QThread):
             # price = BTC.get_last()
             # price = pykorbit.get_current_price("BTC")
             bithumb = Bithumb.Ticker()
-            price = bithumb.get_current_price("BTC")
+            bithumb.get_orderbook("BTC")
+            timestamp, price = bithumb.get_current_price("BTC")
 
             self.BTC_price.emit(str(price))
 
             currentTime = QTime.currentTime()
-            self.cur_time.emit(currentTime.toString("hh:mm:ss"))
-            self.sleep(1)
+            # self.cur_time.emit(currentTime.toString("hh:mm:ss"))
+
+            self.cur_time.emit(str(datetime.datetime.fromtimestamp(timestamp / 1000)))
+            time.sleep(self.delay)

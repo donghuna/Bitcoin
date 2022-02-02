@@ -2,6 +2,7 @@ import requests
 
 # 요청 당시 빗썸 거래소 가상자산 현재가 정보를 제공합니다.
 # https://api.bithumb.com/public/ticker/{order_currency}_{payment_currency}
+# 빗썸의 공개 API는 초당 20회 호출할 수 있습니다
 
 """
 필드	설명	타입
@@ -23,26 +24,30 @@ date	타임 스탬프	Integer(String)
 
 class Ticker:
     def __init__(self):
-        self.base_url = "https://api.bithumb.com/public/ticker/{}_{}"
+        self.ticker_url = "https://api.bithumb.com/public/ticker/{}_{}"
+        self.orderbook_url = "https://api.bithumb.com/public/orderbook/{}_{}"
         self.tickers = self._get_ticker_list()
         self.data = {}
 
-    def _send_rest_api(self, order_currency, payment_currency):
-        url = self.base_url.format(order_currency, payment_currency)
+    def _send_rest_api(self, mode, order_currency, payment_currency):
+        if mode == "Ticker":
+            url = self.ticker_url.format(order_currency, payment_currency)
+        elif mode == "Orderbook":
+            url = self.orderbook_url.format(order_currency, payment_currency)
         r = requests.get(url)
         return r.json()
 
     def _get_ticker_list(self):
         rtn = []
-        self.get_all_data()
+        self.get_all_ticker_data()
         self.check_status()
         for key in self.data['data'].keys():
             rtn.append(key)
         rtn.pop()   # because of last one is 'date'
         return rtn
 
-    def get_all_data(self):
-        self.data = self._send_rest_api("ALL", "KRW")
+    def get_all_ticker_data(self):
+        self.data = self._send_rest_api("Ticker", "ALL", "KRW")
 
     def get_all_tickers(self):
         return self.tickers
@@ -54,9 +59,25 @@ class Ticker:
         return True
 
     def get_current_price(self, ticker):
-        self.get_all_data()
+        self.get_all_ticker_data()
         self.check_status()
-        return self.data['data'][ticker]['closing_price']
+        return int(self.data['data']['date']), self.data['data'][ticker]['closing_price']
+
+    def get_market_detail(self, ticker):
+        # TODO : return value which I need
+        self.get_all_ticker_data()
+        self.check_status()
+        rtn = ()
+        self.data['data'][ticker]['min_price']
+        self.data['data'][ticker]['max_price']
+        self.data['data'][ticker]['min_price']
+        self.data['data'][ticker]['min_price']
+        return None
+
+    def get_orderbook(self, ticker):
+        orderbook_data = self._send_rest_api("Orderbook", "ALL", "KRW")
+        print(orderbook_data['data'][ticker]['bids'][0])
+        return orderbook_data
 
 
 """
