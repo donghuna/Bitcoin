@@ -15,7 +15,7 @@ class MyWindow(QMainWindow, form_class):
         self.setupUi(self)
 
         # Window position, size
-        self.setGeometry(200, 200, 300, 400)
+        self.setGeometry(200, 200, 700, 400)
         # title
         self.setWindowTitle("BitCoin")
         # icon
@@ -25,6 +25,7 @@ class MyWindow(QMainWindow, form_class):
         self.worker.start()
         self.worker.BTC_price.connect(self.signal1_emitted)
         self.worker.cur_time.connect(self.signal2_emitted)
+        self.worker.QTable_controller.connect(self.signal3_emitted)
 
     @pyqtSlot(str)
     def signal1_emitted(self, price):
@@ -33,3 +34,9 @@ class MyWindow(QMainWindow, form_class):
     @pyqtSlot(str)
     def signal2_emitted(self, str_time):
         self.statusBar().showMessage(str_time)
+
+    @pyqtSlot(list)
+    def signal3_emitted(self, tickers):
+        for i, ticker in enumerate(tickers):
+            ticker_item = QTableWidgetItem(ticker)
+            self.tableWidget.setItem(i, 0, ticker_item)
