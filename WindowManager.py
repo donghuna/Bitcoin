@@ -4,7 +4,6 @@ from PyQt5 import uic
 from PyQt5.QtCore import *
 import ThreadManager
 
-
 # Load window UI made by Qt Designer
 form_class = uic.loadUiType("Resources/mainWindow.ui")[0]
 
@@ -35,8 +34,14 @@ class MyWindow(QMainWindow, form_class):
     def signal2_emitted(self, str_time):
         self.statusBar().showMessage(str_time)
 
-    @pyqtSlot(list)
-    def signal3_emitted(self, tickers):
-        for i, ticker in enumerate(tickers):
-            ticker_item = QTableWidgetItem(ticker)
-            self.tableWidget.setItem(i, 0, ticker_item)
+    @pyqtSlot(dict)
+    def signal3_emitted(self, data):
+        try:
+            for index, ticker in enumerate(data):
+                info = data[ticker]
+                self.tableWidget.setItem(index, 0, QTableWidgetItem(ticker))
+                self.tableWidget.setItem(index, 1, QTableWidgetItem(str(info[0])))
+                self.tableWidget.setItem(index, 2, QTableWidgetItem(str(info[1])))
+                self.tableWidget.setItem(index, 3, QTableWidgetItem(str(info[2])))
+        except:
+            pass

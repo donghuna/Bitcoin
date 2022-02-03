@@ -8,7 +8,7 @@ import datetime
 class Worker(QThread):
     BTC_price = pyqtSignal(str)
     cur_time = pyqtSignal(str)
-    QTable_controller = pyqtSignal(list)
+    QTable_controller = pyqtSignal(dict)
 
     def __init__(self):
         super().__init__()
@@ -20,13 +20,11 @@ class Worker(QThread):
 
     def run(self):
         while True:
-            # self.bithumb.get_orderbook("BTC")
-            self.QTable_controller.emit(self.tickers)
+            data = {}
 
-            timestamp, price = self.bithumb.get_current_price("BTC")
+            for ticker in self.tickers:
+                data[ticker] = self.alarm.bull_market(ticker)
 
-            self.BTC_price.emit(str(price))
-            self.alarm.bull_market(price)
-
-            self.cur_time.emit(str(datetime.datetime.fromtimestamp(timestamp / 1000)))
+            self.QTable_controller.emit(data)
             time.sleep(self.delay)
+

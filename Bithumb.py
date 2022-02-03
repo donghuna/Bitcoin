@@ -2,6 +2,10 @@ import requests
 import datetime
 from pandas import DataFrame
 
+# Bithumb.py 에서의 롤은
+# API를 사용해서 데이터를 가져오는 것 까지로 제한.
+# 데이터 재가공은 어디서? bithumb외에 다른 사이트는? 공통적인 수정부분이 존재?
+
 # 요청 당시 빗썸 거래소 가상자산 현재가 정보를 제공합니다.
 # https://api.bithumb.com/public/ticker/{order_currency}_{payment_currency}
 """
@@ -72,7 +76,8 @@ class Ticker:
     def get_current_price(self, ticker):
         self.get_all_ticker_data()
         self.check_status()
-        return int(self.all_ticker_data['data']['date']), int(self.all_ticker_data['data'][ticker]['closing_price'])
+        # return int(self.all_ticker_data['data']['date']), int(self.all_ticker_data['data'][ticker]['closing_price'])
+        return int(self.all_ticker_data['data'][ticker]['closing_price'])
 
     def get_market_detail(self, ticker):
         # TODO : return value which I need
