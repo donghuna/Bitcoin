@@ -36,13 +36,18 @@ date	타임 스탬프	Integer(String)
 
 
 class Ticker:
+    def __new__(cls, *args, **kwargs):
+        if not hasattr(cls, "_instance"):
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
     def __init__(self):
+        self.all_ticker_data = {}
+        self.candlestick_data = {}
         self.ticker_url = "https://api.bithumb.com/public/ticker/{}_{}"
         self.orderbook_url = "https://api.bithumb.com/public/orderbook/{}_{}"
         self.candlestick_url = "https://api.bithumb.com/public/candlestick/{}_{}/{}"
         self.tickers = self._get_ticker_list()
-        self.all_ticker_data = {}
-        self.candlestick_data = {}
 
     def _send_rest_api(self, mode, order_currency, payment_currency):
         if mode == "Ticker":
@@ -54,15 +59,18 @@ class Ticker:
 
     def _get_ticker_list(self):
         rtn = []
-        self.get_all_ticker_data()
-        self.check_status()
+        self.renewal_all_ticker_data()
+        if not self.check_status():
+            return None
+
         for key in self.all_ticker_data['data'].keys():
             rtn.append(key)
         rtn.pop()   # because of last one is 'date'
         return rtn
 
-    def get_all_ticker_data(self):
+    def renewal_all_ticker_data(self):
         self.all_ticker_data = self._send_rest_api("Ticker", "ALL", "KRW")
+        print(self.all_ticker_data['data']['BTC']['closing_price'])
 
     def get_all_tickers(self):
         return self.tickers
@@ -74,22 +82,20 @@ class Ticker:
         return True
 
     def get_current_price(self, ticker):
-        self.get_all_ticker_data()
-        self.check_status()
-        # return int(self.all_ticker_data['data']['date']), int(self.all_ticker_data['data'][ticker]['closing_price'])
         return int(self.all_ticker_data['data'][ticker]['closing_price'])
 
+    """
     def get_market_detail(self, ticker):
         # TODO : return value which I need
-        self.get_all_ticker_data()
-        self.check_status()
+        # self.get_all_ticker_data()
+        # self.check_status()
         rtn = ()
         self.all_ticker_data['data'][ticker]['min_price']
         self.all_ticker_data['data'][ticker]['max_price']
         self.all_ticker_data['data'][ticker]['min_price']
         self.all_ticker_data['data'][ticker]['min_price']
         return None
-
+    """
     def get_orderbook(self, ticker):
         orderbook_data = self._send_rest_api("Orderbook", "ALL", "KRW")
         print(orderbook_data['data'][ticker]['bids'][0])
@@ -129,4 +135,5 @@ class Ticker:
     def _timestamp_to_datetime(timestamp):
         _date = datetime.datetime.fromtimestamp(int(timestamp)/1000).strftime('%Y-%m-%d %H:%M:%S')
         return _date
+
 

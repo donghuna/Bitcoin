@@ -21,6 +21,7 @@ class Worker(QThread):
     def run(self):
         while True:
             data = {}
+            self.bithumb.renewal_all_ticker_data()
 
             for ticker in self.tickers:
                 data[ticker] = self.alarm.bull_market(ticker)

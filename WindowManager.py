@@ -39,9 +39,9 @@ class MyWindow(QMainWindow, form_class):
         try:
             for index, ticker in enumerate(data):
                 info = data[ticker]
-                self.tableWidget.setItem(index, 0, QTableWidgetItem(ticker))
-                self.tableWidget.setItem(index, 1, QTableWidgetItem(str(info[0])))
-                self.tableWidget.setItem(index, 2, QTableWidgetItem(str(info[1])))
-                self.tableWidget.setItem(index, 3, QTableWidgetItem(str(info[2])))
+                self.tableWidget.setItem(index, 0, QTableWidgetItem(f'{ticker:^20}'))
+                self.tableWidget.setItem(index, 1, QTableWidgetItem(str(f'{info[0]:^20,}')))
+                self.tableWidget.setItem(index, 2, QTableWidgetItem(str(f'{info[1]:^20,.0f}')))
+                self.tableWidget.setItem(index, 3, QTableWidgetItem(str(f'{info[2]:^20}')))
         except:
             pass
