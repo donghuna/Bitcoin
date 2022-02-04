@@ -68,9 +68,23 @@ class Ticker:
         rtn.pop()   # because of last one is 'date'
         return rtn
 
+    def renewal_candlestick(self, ticker):
+        # 24h {1m, 3m, 5m, 10m, 30m, 1h, 6h, 12h, 24h 사용 가능}
+        chart_intervals = "24h"
+        # chart_intervals = "1m"
+
+        url = self.candlestick_url.format(ticker, "KRW", chart_intervals)
+        r = requests.get(url)
+        tmp_data = r.json()
+        if tmp_data['status'] == "0000":
+            self.candlestick_data[ticker] = tmp_data
+            return True
+        else:
+            return False
+
     def renewal_all_ticker_data(self):
         self.all_ticker_data = self._send_rest_api("Ticker", "ALL", "KRW")
-        print(self.all_ticker_data['data']['BTC']['closing_price'])
+        # print(self.all_ticker_data['data']['BTC']['closing_price'])
 
     def get_all_tickers(self):
         return self.tickers
@@ -101,22 +115,8 @@ class Ticker:
         print(orderbook_data['data'][ticker]['bids'][0])
         return orderbook_data
 
-    def _renewal_candlestick(self, ticker):
-        # 24h {1m, 3m, 5m, 10m, 30m, 1h, 6h, 12h, 24h 사용 가능}
-        chart_intervals = "24h"
-        # chart_intervals = "1m"
-
-        url = self.candlestick_url.format(ticker, "KRW", chart_intervals)
-        r = requests.get(url)
-        tmp_data = r.json()
-        if tmp_data['status'] == "0000":
-            self.candlestick_data[ticker] = tmp_data
-            return True
-        else:
-            return False
-
     def get_ochlv(self, ticker):
-        if not self._renewal_candlestick(ticker):
+        if not self.renewal_candlestick(ticker):
             return False
 
         # TODO : need this seq?
@@ -128,8 +128,13 @@ class Ticker:
         df.columns = ["date", "open", "close", "high", "low", "volume"]
         df.set_index("date", inplace=True)
         df = df.astype({"open": int, "close": int, "high": int, "low": int, "volume": float})
-
         return df
+
+    def sell(self, amount):
+        pass
+
+    def buy(self, amount):
+        pass
 
     @staticmethod
     def _timestamp_to_datetime(timestamp):

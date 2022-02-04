@@ -17,6 +17,8 @@ class Worker(QThread):
         self.tickers = ["BTC", "ETH", "BCH", "ETC"]
         self.alarm = Alarm.Alarm()
         self.delay = 0.5
+        self.now = datetime.datetime.now()
+        self.mid = datetime.datetime(self.now.year, self.now.month, self.now.day) + datetime.timedelta(1)
 
     def run(self):
         while True:
@@ -27,5 +29,16 @@ class Worker(QThread):
                 data[ticker] = self.alarm.bull_market(ticker)
 
             self.QTable_controller.emit(data)
+
+            if self.midnight_timer():
+                self.bithumb.sell(0)
+
             time.sleep(self.delay)
+
+    def midnight_timer(self):
+        self.now = datetime.datetime.now()
+        if self.mid < self.now < self.mid + datetime.timedelta(seconds=20):
+            self.mid = datetime.datetime(self.now.year, self.now.month, self.now.day) + datetime.timedelta(1)
+            return True
+        return False
 
