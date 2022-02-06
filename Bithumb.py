@@ -35,7 +35,7 @@ date	타임 스탬프	Integer(String)
 """
 
 
-class Ticker:
+class Bithumb:
     def __new__(cls, *args, **kwargs):
         if not hasattr(cls, "_instance"):
             cls._instance = super().__new__(cls)
@@ -60,7 +60,7 @@ class Ticker:
     def _get_ticker_list(self):
         rtn = []
         self.renewal_all_ticker_data()
-        if not self.check_status():
+        if not self.check_status(self.all_ticker_data['status']):
             return None
 
         for key in self.all_ticker_data['data'].keys():
@@ -71,7 +71,6 @@ class Ticker:
     def renewal_candlestick(self, ticker):
         # 24h {1m, 3m, 5m, 10m, 30m, 1h, 6h, 12h, 24h 사용 가능}
         chart_intervals = "24h"
-        # chart_intervals = "1m"
 
         url = self.candlestick_url.format(ticker, "KRW", chart_intervals)
         r = requests.get(url)
@@ -83,36 +82,30 @@ class Ticker:
             return False
 
     def renewal_all_ticker_data(self):
+        """
+        모든 ticker에 대한 가격정보를 리뉴얼
+        :return:
+        """
         self.all_ticker_data = self._send_rest_api("Ticker", "ALL", "KRW")
         # print(self.all_ticker_data['data']['BTC']['closing_price'])
 
     def get_all_tickers(self):
         return self.tickers
 
-    def check_status(self):
+    @staticmethod
+    def check_status(status):
         # TODO : raise error message
-        if self.all_ticker_data['status'] != '0000':
+        if status != '0000':
             return False
         return True
 
     def get_current_price(self, ticker):
+        # TODO : need renewal data?
         return int(self.all_ticker_data['data'][ticker]['closing_price'])
 
-    """
-    def get_market_detail(self, ticker):
-        # TODO : return value which I need
-        # self.get_all_ticker_data()
-        # self.check_status()
-        rtn = ()
-        self.all_ticker_data['data'][ticker]['min_price']
-        self.all_ticker_data['data'][ticker]['max_price']
-        self.all_ticker_data['data'][ticker]['min_price']
-        self.all_ticker_data['data'][ticker]['min_price']
-        return None
-    """
     def get_orderbook(self, ticker):
         orderbook_data = self._send_rest_api("Orderbook", "ALL", "KRW")
-        print(orderbook_data['data'][ticker]['bids'][0])
+        # print(orderbook_data['data'][ticker]['bids'][0])
         return orderbook_data
 
     def get_ochlv(self, ticker):
@@ -130,11 +123,33 @@ class Ticker:
         df = df.astype({"open": int, "close": int, "high": int, "low": int, "volume": float})
         return df
 
-    def sell(self, amount):
+    # 잔고 조회
+    def get_balance(self, ticker):
+        """
+        ticker : 조회할 가상화폐 ticker
+        :return: 비트코인의 총 잔고, 거래 중인 비트코인의 수량, 보유 중인 총원화, 주문에 사용된 원화를
+        """
+        # temp return
+        return 100
+
+    def sell_market_order(self, ticker, unit):
         pass
 
-    def buy(self, amount):
+    # sell strategy 1. 보유 중인 비트코인을 다음 날 시초가에 전량 매도
+    def sell(self, ticker):
+        unit = self.get_balance(ticker)
+        self.sell_market_order(ticker, unit)
+
+    def buy_market_order(self, ticker, unit):
         pass
+
+    # buy strategy 1. 목표가가 현재가 이상일 경우 잔고를 조회하고 주문 가능한 수량을 계산한 후에 시장가 매수
+    def buy_crypto_currency(self, ticker):
+        krw = self.get_balance("KRW")  # 잔고 확인
+        orderbook = self.get_orderbook(ticker)
+        sell_price = orderbook['asks'][0]['price']
+        unit = krw / float(sell_price)
+        self.buy_market_order(ticker, unit)
 
     @staticmethod
     def _timestamp_to_datetime(timestamp):
