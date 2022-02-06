@@ -11,9 +11,11 @@ class InvestmentStrategy:
         self.bithumb = Bithumb.Bithumb()
         pass
 
-    def temp1(self):
-        df = self.bithumb.get_ochlv("BTC")
+    # Moving Average 5 days
+    def get_yesterday_ma5(self, ticker):
+        df = self.bithumb.get_ochlv(ticker)
         close = df['close']
-        ma5 = close.rolling(5).mean()
-        print(ma5)
+        ma = close.rolling(window=5).mean()
+        return ma[-2]
+        # print(ma, ma[-2])
 

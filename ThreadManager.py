@@ -44,7 +44,7 @@ class Worker(QThread):
 
 
             # test
-            self.BTC_price.emit(str(self.IS.temp1()))
+            self.BTC_price.emit(str(self.IS.get_yesterday_ma5("BTC")))
 
             time.sleep(self.delay)
 
