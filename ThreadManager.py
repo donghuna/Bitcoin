@@ -2,7 +2,6 @@ from PyQt5.QtCore import *
 import Bithumb
 import Controller
 import time
-import Investment_strategy
 import datetime
 
 
@@ -14,10 +13,9 @@ class Worker(QThread):
     def __init__(self):
         super().__init__()
         self.bithumb = Bithumb.Bithumb()
-        self.IS = Investment_strategy.InvestmentStrategy()
+        self.controller = Controller.Controller()
         # TODO : ticker selection method?
         self.tickers = ["BTC", "ETH", "BCH", "ETC"]
-        self.alarm = Alarm.Alarm()
         self.delay = 0.5
         self.now = datetime.datetime.now()
         self.mid = datetime.datetime(self.now.year, self.now.month, self.now.day) + datetime.timedelta(1)
@@ -30,22 +28,17 @@ class Worker(QThread):
 
             for ticker in self.tickers:
                 data[ticker] = self.IS.bull_market(ticker)
-
             self.QTable_controller.emit(data)
-
-            # sell condition
-            if self.midnight_watchdog():
-                self.bithumb.sell(0)
-
-            # buy condition
-            current_price = self.bithumb.get_current_price("BTC")
-            if (current_price > self.IS.get_target_price("BTC")) \
-                    and (current_price > self.IS.get_yesterday_ma5("BTC")):
-                self.bithumb.buy_crypto_currency("BTC")
-
 
             # test
             self.BTC_price.emit(str(self.IS.get_yesterday_ma5("BTC")))
+
+            # sell condition
+            if self.midnight_watchdog():
+                self.controller.sell()
+
+            # buy condition
+            self.controller.buy()
 
             time.sleep(self.delay)
 

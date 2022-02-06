@@ -23,19 +23,19 @@ class MyWindow(QMainWindow, form_class):
         self.worker = ThreadManager.Worker()
         self.worker.start()
         self.worker.BTC_price.connect(self.signal1_emitted)
-        self.worker.cur_time.connect(self.signal2_emitted)
-        self.worker.QTable_controller.connect(self.signal3_emitted)
+        self.worker.cur_time.connect(self.statusbar_emitted)
+        self.worker.QTable_controller.connect(self.table_widget_emitted)
 
     @pyqtSlot(str)
     def signal1_emitted(self, price):
         self.lineEdit.setText(price)
 
     @pyqtSlot(str)
-    def signal2_emitted(self, str_time):
+    def statusbar_emitted(self, str_time):
         self.statusBar().showMessage(str_time)
 
     @pyqtSlot(dict)
-    def signal3_emitted(self, data):
+    def table_widget_emitted(self, data):
         try:
             for index, ticker in enumerate(data):
                 info = data[ticker]

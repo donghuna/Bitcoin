@@ -21,9 +21,10 @@ class InvestmentStrategy:
 
     def bull_market(self, ticker):
         """
-        상승장, 하락장 여부를 판단
+        Qtable에 표시하기 위한 데이터.
+        상승장, 하락장 여부를 판단,
         :param ticker:
-        :return:
+        :return: 현재가격, 5일평균, "상승" or "하락"
         """
         price = self.bithumb.get_current_price(ticker)
         df = self.bithumb.get_ochlv(ticker)
@@ -37,7 +38,6 @@ class InvestmentStrategy:
             state = "상승"
         else:
             state = "하락"
-
         return price, last_ma5, state
 
     def get_target_price(self, ticker):
