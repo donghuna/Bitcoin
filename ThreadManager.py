@@ -1,6 +1,6 @@
 from PyQt5.QtCore import *
 import Bithumb
-import Alarm
+import Controller
 import time
 import Investment_strategy
 import datetime
