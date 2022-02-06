@@ -29,7 +29,7 @@ class Worker(QThread):
             self.bithumb.renewal_all_ticker_data()
 
             for ticker in self.tickers:
-                data[ticker] = self.alarm.bull_market(ticker)
+                data[ticker] = self.IS.bull_market(ticker)
 
             self.QTable_controller.emit(data)
 
@@ -39,7 +39,7 @@ class Worker(QThread):
 
             # buy condition
             current_price = self.bithumb.get_current_price("BTC")
-            if (current_price > self.alarm.get_target_price("BTC")) \
+            if (current_price > self.IS.get_target_price("BTC")) \
                     and (current_price > self.IS.get_yesterday_ma5("BTC")):
                 self.bithumb.buy_crypto_currency("BTC")
 
