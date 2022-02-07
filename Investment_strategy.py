@@ -9,7 +9,6 @@ import Bithumb
 class InvestmentStrategy:
     def __init__(self):
         self.bithumb = Bithumb.Bithumb()
-        pass
 
     # Moving Average 5 days
     def get_yesterday_ma5(self, ticker):
@@ -26,7 +25,7 @@ class InvestmentStrategy:
         :param ticker:
         :return: 현재가격, 5일평균, "상승" or "하락"
         """
-        price = self.bithumb.get_current_price(ticker)
+        price = self.bithumb.get_last_updated_price(ticker)
         df = self.bithumb.get_ochlv(ticker)
         close = df['close']
 

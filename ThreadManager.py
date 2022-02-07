@@ -3,6 +3,7 @@ import Bithumb
 import Controller
 import time
 import datetime
+import logging
 
 
 class Worker(QThread):
@@ -23,15 +24,11 @@ class Worker(QThread):
     def run(self):
         while True:
             # display
-            data = {}
             self.bithumb.renewal_all_ticker_data()
-
-            for ticker in self.tickers:
-                data[ticker] = self.IS.bull_market(ticker)
-            self.QTable_controller.emit(data)
+            self.QTable_controller.emit(self.controller.gen_table_data(self.tickers))
 
             # test
-            self.BTC_price.emit(str(self.IS.get_yesterday_ma5("BTC")))
+            # self.BTC_price.emit(str(self.IS.get_yesterday_ma5("BTC")))
 
             # sell condition
             if self.midnight_watchdog():

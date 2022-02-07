@@ -1,6 +1,8 @@
 import requests
 import datetime
 from pandas import DataFrame
+import logging
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
 # Bithumb.py 에서의 롤은
 # API를 사용해서 데이터를 가져오는 것 까지로 제한.
@@ -47,7 +49,8 @@ class Bithumb:
         self.ticker_url = "https://api.bithumb.com/public/ticker/{}_{}"
         self.orderbook_url = "https://api.bithumb.com/public/orderbook/{}_{}"
         self.candlestick_url = "https://api.bithumb.com/public/candlestick/{}_{}/{}"
-        self.tickers = self._get_ticker_list()
+        if not hasattr(self, "tickers"):
+            self.tickers = self._get_ticker_list()
 
     def _send_rest_api(self, mode, order_currency, payment_currency):
         if mode == "Ticker":
@@ -55,6 +58,7 @@ class Bithumb:
         elif mode == "Orderbook":
             url = self.orderbook_url.format(order_currency, payment_currency)
         r = requests.get(url)
+        logging.debug("send rest api")
         return r.json()
 
     def _get_ticker_list(self):
@@ -99,9 +103,12 @@ class Bithumb:
             return False
         return True
 
-    def get_current_price(self, ticker):
-        # TODO : need renewal data?
-        return int(self.all_ticker_data['data'][ticker]['closing_price'])
+    def get_last_updated_price(self, ticker):
+        try:
+            return int(self.all_ticker_data['data'][ticker]['closing_price'])
+        except KeyError:
+            self.renewal_all_ticker_data()
+            return int(self.all_ticker_data['data'][ticker]['closing_price'])
 
     def get_orderbook(self, ticker):
         orderbook_data = self._send_rest_api("Orderbook", "ALL", "KRW")
