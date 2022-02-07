@@ -16,7 +16,7 @@ class Worker(QThread):
         self.bithumb = Bithumb.Bithumb()
         self.controller = Controller.Controller()
         # TODO : ticker selection method?
-        self.tickers = ["BTC", "ETH", "BCH", "ETC"]
+        self.tickers = ["BTC", "ETH"]
         self.delay = 0.5
         self.now = datetime.datetime.now()
         self.mid = datetime.datetime(self.now.year, self.now.month, self.now.day) + datetime.timedelta(1)

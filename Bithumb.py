@@ -44,13 +44,16 @@ class Bithumb:
         return cls._instance
 
     def __init__(self):
+        cls = type(self)
+        if hasattr(cls, "_init"):
+            return
         self.all_ticker_data = {}
         self.candlestick_data = {}
         self.ticker_url = "https://api.bithumb.com/public/ticker/{}_{}"
         self.orderbook_url = "https://api.bithumb.com/public/orderbook/{}_{}"
         self.candlestick_url = "https://api.bithumb.com/public/candlestick/{}_{}/{}"
-        if not hasattr(self, "tickers"):
-            self.tickers = self._get_ticker_list()
+        self.tickers = self._get_ticker_list()
+        cls._init = True
 
     def _send_rest_api(self, mode, order_currency, payment_currency):
         if mode == "Ticker":
@@ -113,7 +116,7 @@ class Bithumb:
     def get_orderbook(self, ticker):
         orderbook_data = self._send_rest_api("Orderbook", "ALL", "KRW")
         # print(orderbook_data['data'][ticker]['bids'][0])
-        return orderbook_data
+        return orderbook_data[ticker]
 
     def get_ochlv(self, ticker):
         if not self.renewal_candlestick(ticker):
