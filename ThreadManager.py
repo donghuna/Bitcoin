@@ -27,9 +27,6 @@ class Worker(QThread):
             self.bithumb.renewal_all_ticker_data()
             self.QTable_controller.emit(self.controller.gen_table_data(self.tickers))
 
-            # test
-            # self.BTC_price.emit(str(self.IS.get_yesterday_ma5("BTC")))
-
             # sell condition
             if self.midnight_watchdog():
                 self.controller.sell()
@@ -48,4 +45,5 @@ class Worker(QThread):
         return False
 
     def buy_watchdog(self):
+        # 매수 알고리즘 성능에 따라 시간간격이 달라질 것임.
         pass

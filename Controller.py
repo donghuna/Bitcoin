@@ -6,6 +6,7 @@ class Controller:
     def __init__(self):
         self.bithumb = Bithumb.Bithumb()
         self.IS = Investment_strategy.InvestmentStrategy()
+        self.buy_amount = 1
 
     def buy(self):
         current_price = self.bithumb.get_last_updated_price("BTC")
