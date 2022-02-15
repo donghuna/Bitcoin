@@ -3,7 +3,6 @@ import Bithumb
 import Controller
 import time
 import datetime
-import logging
 
 
 class Worker(QThread):

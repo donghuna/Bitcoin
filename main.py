@@ -1,17 +1,11 @@
-import Logger.Logger as Logger
 import sys
+import Logger.Logger as Logger
 from PyQt5.QtWidgets import *
 import WindowManager
 
 
 def main():
-    # logging.basicConfig(level=logging.INFO, format='%(relativeCreated)6d %(threadName)s %(message)s')
-
-    # logging.basicConfig(level=logging.INFO)
-    # log = logging.getLogger()
-
     logger = Logger.get_logger(__name__)
-    logger.info(f'1번째 방문입니다.')
 
     app = QApplication(sys.argv)
     window = WindowManager.MyWindow()
