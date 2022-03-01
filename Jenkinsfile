@@ -10,8 +10,6 @@ pipeline {
 
     stages {
         stage('Prepare') {
-            agent any
-
             steps {
                 echo "Prepare!"
 
