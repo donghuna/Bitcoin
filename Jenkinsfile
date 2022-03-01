@@ -5,9 +5,6 @@ pipeline {
         pollSCM('*/3 * * * *')
     }
 
-    environment {
-    }
-
     stages {
         stage('Prepare') {
             steps {
