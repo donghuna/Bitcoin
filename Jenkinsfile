@@ -9,7 +9,7 @@ pipeline {
     }
 
     stages {
-        stage('Prepare'){
+        stage('Prepare') {
             agent any
 
             steps {
@@ -20,14 +20,14 @@ pipeline {
                     credentialsId: 'jenkinsgit'
             }
         }
-        stage('Test'){
+        stage('Test') {
             agent any
 
             steps {
                 echo "Prepare!"
             }
         }
-        stage('Build'){
+        stage('Build') {
             agent any
 
             steps {
