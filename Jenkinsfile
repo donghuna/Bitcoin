@@ -14,11 +14,11 @@ pipeline {
 
             steps {
                 echo "Prepare!"
-            }
 
-            git url: 'https://github.com/donghuna/Bitcoin.git',
-                branch: 'master',
-                credentialsId: 'jenkinsgit'
+                git url: 'https://github.com/donghuna/Bitcoin.git',
+                    branch: 'master',
+                    credentialsId: 'jenkinsgit'
+            }
         }
         stage('Test'){
             agent any
